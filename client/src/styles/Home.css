@@ -1,1 +1,37 @@
-"" 
+.home {
+    font-family: Arial, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  header {
+    background-color: #f8f8f8;
+    padding: 10px 0;
+  }
+  
+  nav ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    justify-content: space-around;
+  }
+  
+  nav ul li a {
+    text-decoration: none;
+    color: #333;
+  }
+  
+  main {
+    margin-top: 40px;
+  }
+  
+  .featured-events {
+    margin-top: 40px;
+  }
+  
+  footer {
+    margin-top: 40px;
+    text-align: center;
+    color: #666;
+  }
