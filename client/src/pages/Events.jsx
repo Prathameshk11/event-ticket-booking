@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import '../styles/Events.css';
 
 export default function Events() {
   const [searchTerm, setSearchTerm] = useState('');

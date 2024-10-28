@@ -13,29 +13,17 @@ const EventSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
-  time: {
-    type: String,
-    required: true
-  },
   location: {
     type: String,
-    required: true
-  },
-  totalTickets: {
-    type: Number,
-    required: true
-  },
-  availableTickets: {
-    type: Number,
     required: true
   },
   price: {
     type: Number,
     required: true
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
+  availableTickets: {
+    type: Number,
+    required: true
   }
 });
 
