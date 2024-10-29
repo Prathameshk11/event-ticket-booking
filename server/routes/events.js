@@ -5,8 +5,30 @@ const Event = require('../models/Event');
 // Get all events
 router.get('/', async (req, res) => {
   try {
-    const events = await Event.find();
+    const { search, category } = req.query;
+    let query = {};
+
+    if (search) {
+      query.title = { $regex: search, $options: 'i' };
+    }
+
+    if (category) {
+      query.category = category;
+    }
+
+    const events = await Event.find(query);
     res.json(events);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// Get event categories
+router.get('/categories', async (req, res) => {
+  try {
+    const categories = await Event.distinct('category');
+    res.json(categories);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');

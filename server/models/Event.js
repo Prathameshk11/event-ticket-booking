@@ -13,7 +13,15 @@ const EventSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
+  time: {
+    type: String,
+    required: true
+  },
   location: {
+    type: String,
+    required: true
+  },
+  category: {
     type: String,
     required: true
   },
@@ -23,6 +31,10 @@ const EventSchema = new mongoose.Schema({
   },
   availableTickets: {
     type: Number,
+    required: true
+  },
+  image: {
+    type: String,
     required: true
   }
 });

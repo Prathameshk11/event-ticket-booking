@@ -1,11 +1,22 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 export default function EventDashboard() {
-  const upcomingEvents = [
-    { id: 1, title: "Summer Music Festival", date: "2023-07-15", location: "Central Park, New York" },
-    { id: 2, title: "Tech Conference 2023", date: "2023-08-10", location: "Convention Center, San Francisco" },
-    { id: 3, title: "Food & Wine Expo", date: "2023-09-05", location: "Expo Center, Chicago" },
-  ];
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/events');
+        const data = await response.json();
+        setUpcomingEvents(data);
+      } catch (err) {
+        console.error('Failed to fetch events', err);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
@@ -18,16 +29,16 @@ export default function EventDashboard() {
           <div className="border-t border-gray-200">
             <ul className="divide-y divide-gray-200">
               {upcomingEvents.map((event) => (
-                <li key={event.id} className="px-4 py-4 sm:px-6">
+                <li key={event._id} className="px-4 py-4 sm:px-6">
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-blue-600 truncate">{event.title}</p>
-                      <p className="mt-1 text-sm text-gray-500">📅 Date: {event.date}</p>
+                      <p className="mt-1 text-sm text-gray-500">📅 Date: {new Date(event.date).toLocaleDateString()}</p>
                       <p className="mt-1 text-sm text-gray-500">📍 Location: {event.location}</p>
                     </div>
                     <div className="ml-4 flex-shrink-0">
                       <Link
-                        to={`/events/${event.id}`}
+                        to={`/events/${event._id}`}
                         className="px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                       >
                         View Details
@@ -38,14 +49,6 @@ export default function EventDashboard() {
               ))}
             </ul>
           </div>
-        </div>
-        <div className="mt-8 text-center">
-          <Link
-            to="/events"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            View All Events
-          </Link>
         </div>
       </div>
     </div>

@@ -7,16 +7,23 @@ export default function Signup() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
     try {
-      await api.post('/auth/register', { name, email, password });
-      toast.success('Signup successful! Please log in.');
-      navigate('/login');
+      const res = await api.post('/auth/register', { name, email, password });
+      localStorage.setItem('token', res.data.token);
+      toast.success('Signup successful!');
+      navigate('/');
+      window.location.reload(); // Force a reload to update the header
     } catch (err) {
-      toast.error(err.response.data.msg || 'An error occurred');
+      toast.error(err.response?.data?.msg || 'An error occurred during signup');
     }
   };
 
@@ -40,6 +47,7 @@ export default function Signup() {
                   id="name"
                   name="name"
                   type="text"
+                  autoComplete="name"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -79,6 +87,24 @@ export default function Signup() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                Confirm Password
+              </label>
+              <div className="mt-1">
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
               </div>

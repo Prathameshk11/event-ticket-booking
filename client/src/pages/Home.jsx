@@ -1,28 +1,54 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import api from '../utils/api';
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [featuredEvents, setFeaturedEvents] = useState([]);
+  const [categories, setCategories] = useState([]);
 
-  const featuredEvents = [
-    { id: 1, title: "Summer Music Festival", date: "2023-07-15", location: "Central Park, New York", image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=300&q=80" },
-    { id: 2, title: "Tech Conference 2023", date: "2023-08-10", location: "Convention Center, San Francisco", image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=300&q=80" },
-    { id: 3, title: "Food & Wine Expo", date: "2023-09-05", location: "Expo Center, Chicago", image: "https://images.unsplash.com/photo-1574096079513-d8259312b785?auto=format&fit=crop&w=300&q=80" },
-  ];
+  useEffect(() => {
+    const fetchFeaturedEvents = async () => {
+      try {
+        const response = await api.get('/events?limit=3');
+        setFeaturedEvents(response.data);
+      } catch (error) {
+        console.error('Error fetching featured events:', error);
+      }
+    };
 
-  const categories = [
-    { id: 1, name: "Music", icon: "🎵" },
-    { id: 2, name: "Technology", icon: "💻" },
-    { id: 3, name: "Food & Drink", icon: "🍷" },
-    { id: 4, name: "Sports", icon: "⚽" },
-    { id: 5, name: "Arts & Theater", icon: "🎭" },
-    { id: 6, name: "Business", icon: "💼" },
-  ];
+    const fetchCategories = async () => {
+      try {
+        const response = await api.get('/events/categories');
+        setCategories(response.data.map((category, index) => ({
+          id: index + 1,
+          name: category,
+          icon: getCategoryIcon(category)
+        })));
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchFeaturedEvents();
+    fetchCategories();
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // Implement search functionality here
-    console.log('Searching for:', searchTerm);
+    window.location.href = `/events?search=${searchTerm}`;
+  };
+
+  const getCategoryIcon = (category) => {
+    const icons = {
+      'Music': '🎵',
+      'Technology': '💻',
+      'Food & Drink': '🍷',
+      'Sports': '⚽',
+      'Arts & Theater': '🎭',
+      'Business': '💼'
+    };
+    return icons[category] || '🎉';
   };
 
   return (
@@ -40,7 +66,7 @@ export default function Home() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded-r-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+              <button type="submit" className="bg-blue-500 text-white px-6  py-2 rounded-r-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
                 Search
               </button>
             </div>
@@ -53,13 +79,13 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center mb-8">Featured Events</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {featuredEvents.map(event => (
-              <div key={event.id} className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-105">
+              <div key={event._id} className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-105">
                 <img src={event.image} alt={event.title} className="w-full h-48 object-cover" />
                 <div className="p-4">
                   <h3 className="text-xl font-semibold mb-2">{event.title}</h3>
-                  <p className="text-gray-600 mb-2">📅 {event.date}</p>
+                  <p className="text-gray-600 mb-2">📅 {new Date(event.date).toLocaleDateString()}</p>
                   <p className="text-gray-600 mb-4">📍 {event.location}</p>
-                  <Link to={`/events/${event.id}`} className="bg-blue-500 text-white px-4 py-2 rounded-full inline-block hover:bg-blue-600 transition-colors duration-300">
+                  <Link to={`/events/${event._id}`} className="bg-blue-500 text-white px-4 py-2 rounded-full inline-block hover:bg-blue-600 transition-colors duration-300">
                     View Details
                   </Link>
                 </div>
@@ -74,10 +100,10 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center mb-8">Browse by Category</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {categories.map(category => (
-              <div key={category.id} className="bg-gray-100 rounded-lg p-4 text-center transition-transform duration-300 hover:scale-105">
+              <Link key={category.id} to={`/events?category=${category.name}`} className="bg-gray-100 rounded-lg p-4 text-center transition-transform duration-300 hover:scale-105">
                 <div className="text-4xl mb-2">{category.icon}</div>
                 <h3 className="text-lg font-semibold">{category.name}</h3>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
